@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+
+<head th:replace="fragments/headerinc :: head">
+    <title>Do-Ré-Mi</title>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<h2>Liste des Articles</h2>
+
+<th:block th:if="${#lists.isEmpty(articles)}">
+    <p class="w3-text-red">Aucun article disponible.</p>
+</th:block>
+
+<table class="w3-table-all w3-hoverable" th:if="${not #lists.isEmpty(articles)}">
+    <thead class="w3-light-grey">
+    <tr>
+        <th>Id</th>
+        <th>Titre</th>
+        <th>Catégorie</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="art : ${articles}">
+        <td th:text="${art.articleId}"></td>
+        <td th:text="${art.title}"></td>
+        <td th:text="${art.category}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+
+</html>
