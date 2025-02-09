@@ -61,4 +61,21 @@ public class ArticleRepositoryWithJdbc implements ArticleRepositoryInt {
         return null;
     }
 
+    public Article saveArticle(Article article) {
+        String sql = "INSERT INTO articles (id, title, category) VALUES (?, ?, ?)";
+
+        try (Connection connexion = dataSource.getConnection();
+             PreparedStatement statement = connexion.prepareStatement(sql)) {
+
+            statement.setInt(1, article.getArticleId());
+            statement.setString(2, article.getTitle());
+            statement.setString(3, article.getCategory());
+            statement.execute();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de l'insertion de l'article : " + article.getTitle(), e);
+        }
+        return article;
+    }
+
 }
