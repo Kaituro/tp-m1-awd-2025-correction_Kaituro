@@ -1,9 +1,17 @@
 package doremi.domain;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class Album {
 
+    @NotNull
     private String title;
+
     private Genre genre;
+
+    @Min(1950) @Max(2025)
     private int year;
 
     public Album(String title, Genre genre, int year) {
