@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="fragments/headerinc :: head">
+    <th:block th:with="title='Error - Do-Ré-Mi'"></th:block>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="w3-container w3-padding" th:if="${error} or ${message} or ${customMessage}">
+    <h1 class="w3-text-red w3-center" th:if="${error}" th:text="${error}"></h1>
+    <p class="w3-large w3-center" th:if="${message}" th:text="${message}"></p>
+    <p class="w3-large w3-center" th:if="${customMessage}" th:text="${customMessage}"></p>
+</div>
+
+<div class="w3-container w3-padding w3-center">
+    <a class="w3-button w3-red" th:href="@{/}">Return to Home</a>
+</div>
+</body>
+
+</html>
