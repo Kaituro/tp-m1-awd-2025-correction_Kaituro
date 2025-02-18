@@ -1,10 +1,18 @@
 package doremi.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+@Entity
 public class Album {
+
+    @Id
+    @GeneratedValue
+    private Long id;
 
     @NotNull
     private String title;
@@ -13,6 +21,8 @@ public class Album {
 
     @Min(1950) @Max(2025)
     private int year;
+
+    public Album() { }
 
     public Album(String title, Genre genre, int year) {
         this.setTitle(title);
@@ -42,5 +52,9 @@ public class Album {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
