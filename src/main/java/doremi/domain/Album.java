@@ -3,6 +3,7 @@ package doremi.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +14,9 @@ public class Album {
     @Id
     @GeneratedValue
     private Long id;
+
+    @ManyToOne
+    private Band band;
 
     @NotNull
     private String title;
@@ -52,6 +56,14 @@ public class Album {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public Band getBand() {
+        return band;
+    }
+
+    public void setBand(Band band) {
+        this.band = band;
     }
 
     public Long getId() {
