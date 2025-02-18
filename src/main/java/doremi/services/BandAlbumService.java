@@ -16,18 +16,18 @@ public class BandAlbumService {
         this.bandAlbumRepository = bandAlbumRepository;
     }
 
-    public void save(Album album) {
+    public Album save(Album album) {
         if (album == null) {
             throw new IllegalArgumentException("L'album ne peut pas être null");
         }
-        bandAlbumRepository.save(album);
+        return bandAlbumRepository.save(album);
     }
 
-    public void save(Band band) {
+    public Band save(Band band) {
         if (band == null) {
             throw new IllegalArgumentException("Le groupe ne peut pas être null");
         }
-        bandAlbumRepository.save(band);
+        return bandAlbumRepository.save(band);
     }
 
     public Album findAlbumById(Long id) {
