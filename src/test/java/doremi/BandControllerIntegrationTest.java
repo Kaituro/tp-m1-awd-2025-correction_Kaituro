@@ -12,7 +12,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.either;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,7 +29,7 @@ public class BandControllerIntegrationTest {
     @Autowired
     private BandAlbumService bandAlbumService;
 
-    private Band band;
+    private Band band, newBand;
 
     @BeforeEach
     public void setup() {
@@ -35,6 +38,9 @@ public class BandControllerIntegrationTest {
         band.addAlbum(album);
         album = bandAlbumService.save(album);
         band = album.getBand();
+
+        newBand = new Band("The Beatles", false);
+        newBand = bandAlbumService.save(newBand);
     }
 
     @Test
@@ -47,7 +53,7 @@ public class BandControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(view().name("bands"))
-                .andExpect(content().string(Matchers.containsString("<h2>Liste des Groupes</h2>")))
+                .andExpect(content().string(containsString("<h2>Liste des Groupes</h2>")))
                 .andDo(print());
     }
 
@@ -61,7 +67,7 @@ public class BandControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(view().name("bandShow"))
-                .andExpect(content().string(Matchers.containsString(band.getName())))
+                .andExpect(content().string(containsString(band.getName())))
                 .andDo(print());
     }
 
@@ -74,6 +80,52 @@ public class BandControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(view().name("error"))
+                .andDo(print());
+    }
+
+    @Test
+    public void testCreateBand() throws Exception{
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type GET vers "/band/new"
+        // then: la requête est acceptée (status OK) et la vue "bandForm" est rendue
+        mockMvc.perform(get("/band/new"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(view().name("bandForm"))
+                .andDo(print());
+    }
+
+    @Test
+    public void testCreateBandValide() throws Exception{
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type POST vers "/band/"
+        // when: la requête comporte un objet Band valide
+        // then: le status de la reqûete est FOUND
+        // then: une redirection a lieu vers l'adresse /band/{id} où id est l'id du groupe créé
+        mockMvc.perform(post("/band")
+                        .param("name", newBand.getName())
+                        .param("active", Boolean.toString(newBand.getActive())))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrlPattern("/band/*"))
+                .andDo(print());
+    }
+
+    @Test
+    public void testCreateBandNomInvalide() throws Exception{
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type POST vers "/band/"
+        // when: la requête comporte un objet Band invalide
+        // then: la requête est acceptée (status OK)
+        // then: la vue "bandForm" est rendue avec un message d'erreur de validation
+        mockMvc.perform(post("/band")
+                        .param("name", "")
+                        .param("active", Boolean.toString(newBand.getActive())))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(view().name("bandForm"))
+                .andExpect(content().string(either(containsString("must not be empty"))
+                        .or(containsString("must not be blank"))
+                        .or(containsString("ne doit pas être vide"))))
                 .andDo(print());
     }
 
