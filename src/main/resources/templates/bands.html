@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+
+<head th:replace="fragments/headerinc :: head">
+    <title>Do-Ré-Mi</title>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<h2>Liste des Groupes</h2>
+<table class="w3-table-all w3-hoverable">
+    <tr>
+        <th>Id</th>
+        <th>Nom</th>
+        <th>Actif ?</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="band : ${bands}">
+        <td th:text="${band.id}"></td>
+        <td th:text="${band.name}"></td>
+        <td>
+            <span th:if="${band.active}" th:text="'oui'"></span>
+            <span th:unless="${band.active}" th:text="'non'"></span>
+        </td>
+        <td>
+            <form th:method="get" th:action="@{/band/{id}(id=${band.id})}" style="display:inline;">
+                <button class="w3-button w3-black" type="submit">
+                    <i class="fa fa-eye"></i> Voir
+                </button>
+            </form>
+            <form th:method="get" th:action="@{/band/edit/{id}(id=${band.id})}" style="display:inline;">
+                <button class="w3-button w3-black" type="submit">
+                    <i class="fa fa-edit"></i> Éditer
+                </button>
+            </form>
+            <form th:method="get" th:action="@{/band/delete/{id}(id=${band.id})}" style="display:inline;">
+                <button class="w3-button w3-red" type="submit">
+                    <i class="fa fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

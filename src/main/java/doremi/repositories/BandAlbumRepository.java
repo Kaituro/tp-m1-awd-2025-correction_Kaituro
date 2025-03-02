@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.NoResultException;
 
 import java.util.List;
 
@@ -41,7 +42,18 @@ public class BandAlbumRepository {
     }
 
     public Band findBandById(Long id) {
-        return entityManager.find(Band.class, id);
+        // erreur "failed to lazily initialize a collection of role..."
+        // solution 1 : garder l'appel à findBandById et passer en EAGER
+        // le chargement des entités dans l'annotation @OneToMany (classe Band)
+        // return entityManager.find(Band.class, id);
+
+        // solution 2 : changer la façon de requêter et utiliser une jointure pour charger les albums
+        try {
+            return entityManager.createQuery("select b from Band b left join fetch b.albums where b.id = :id", Band.class)
+                    .setParameter("id", id).getSingleResult();
+        } catch(NoResultException e) {
+            return null;
+        }
     }
 
     public List<Band> findAllBand() {
