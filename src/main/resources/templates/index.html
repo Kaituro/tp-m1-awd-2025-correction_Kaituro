@@ -1,17 +1,107 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 
-<head th:replace="fragments/headerinc :: head">
-    <th:block th:with="title='Do-Ré-Mi - Home'"></th:block>
+<head>
+    <title>Do-Ré-Mi</title>
+    <th:block th:replace="fragments/headerinc :: head"></th:block>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <style>
+        .loading {
+            font-style: italic;
+            color: grey;
+        }
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
-<div th:replace="fragments/header :: header"></div>
 
-<div class="w3-container w3-padding w3-center">
-    <h1>Welcome</h1>
-    <h2><i>Do-Ré-Mi</i> - index</h2>
+<th:block th:replace="fragments/header :: header"></th:block>
+
+<h2>Détail du groupe</h2>
+
+<table class="w3-table w3-striped">
+    <tr>
+        <th>Id :</th>
+        <td th:text="${band.id}"></td>
+    </tr>
+    <tr>
+        <th>Nom :</th>
+        <td th:text="${band.name}"></td>
+    </tr>
+    <tr>
+        <th>Actif :</th>
+        <td th:text="${band.active} ? 'Oui' : 'Non'"></td>
+    </tr>
+    <tr>
+        <th>Liste des albums :</th>
+        <td>
+            <ul th:if="${band.albums != null and #lists.size(band.albums) > 0}">
+                <li th:each="album : ${band.albums}" th:text="${album.title}"></li>
+            </ul>
+            <p th:if="${band.albums == null or #lists.isEmpty(band.albums)}">Aucun album disponible</p>
+        </td>
+    </tr>
+</table>
+
+<br>
+
+<div id="app">
+    <h2>Informations supplémentaires via MusicBrainz :</h2>
+
+    <p v-if="loading" class="loading">Chargement des informations...</p>
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
+    <table v-if="infos && !loading" class="w3-table w3-striped">
+        <tr>
+            <th>Pays :</th>
+            <td>{{ infos.country || 'Inconnu' }}</td>
+        </tr>
+        <tr>
+            <th>Page de l'artiste sur MusicBrainz :</th>
+            <td><a v-if="infos.id" :href="'https://musicbrainz.org/artist/' + infos.id" target="_blank">Lien</a></td>
+        </tr>
+    </table>
+
+    <br>
+    <img src="https://staticbrainz.org/MB/header-logo-1f7dc2a.svg" alt="MusicBrainz Logo"/>
 </div>
-</body>
 
+<script th:inline="javascript">
+    Vue.createApp({
+        data() {
+            return {
+                bandName: [[${band.name}]],
+                infos: null,
+                loading: true,
+                errorMessage: ""
+            };
+        },
+        created() {
+            console.log("Recherche de :", this.bandName);
+            const request = `https://musicbrainz.org/ws/2/artist/?query=name:${encodeURIComponent(this.bandName)}&fmt=json`;
+
+            axios.get(request)
+                .then(response => {
+                    if (response.data.artists && response.data.artists.length > 0) {
+                        this.infos = response.data.artists[0];
+                    } else {
+                        this.errorMessage = "Aucun artiste trouvé.";
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des données :", error);
+                    this.errorMessage = "Impossible de récupérer les informations.";
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
+        }
+    }).mount('#app');
+</script>
+
+</body>
 </html>
