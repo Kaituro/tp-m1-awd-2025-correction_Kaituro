@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -155,6 +156,40 @@ public class BandControllerIntegrationTest {
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(view().name("error"))
                 .andDo(print());
+    }
+
+    @Test
+    public void testDeleteBand() throws Exception {
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type GET vers "/band/delete" avec un id valide
+        // then: la requête est acceptée (status OK)
+        // then: une redirection vers la requête GET vers "/bands" a lieu
+        // then: le nombre de groupe en base a diminué de 1
+        long count = bandAlbumService.findAllBand().size();
+        assertTrue(count > 0);
+        mockMvc.perform(get("/band/delete/" + newBand.getId()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/bands"))
+                .andDo(print());
+        assertEquals(count - 1, bandAlbumService.findAllBand().size());
+    }
+
+    @Test
+    public void testDeleteBandAvecAlbum() throws Exception {
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type GET vers "/band/delete/{id}" où id est l'id d'un groupe en base
+        //       qui est associé à au moins un album
+        // then: la requête est acceptée (status OK)
+        // then: la vue "error" est rendue
+        long count = bandAlbumService.findAllBand().size();
+        assertFalse(band.getAlbums().isEmpty());
+        mockMvc.perform(get("/band/delete/" + band.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(view().name("error"))
+                .andExpect(content().string(Matchers.containsString("Le groupe est associé à un album")))
+                .andDo(print());
+        assertEquals(count, bandAlbumService.findAllBand().size());
     }
 
 }

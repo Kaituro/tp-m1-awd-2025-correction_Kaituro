@@ -61,6 +61,11 @@ public class BandAlbumRepository {
         return query.getResultList();
     }
 
+    @Transactional
+    public void deleteBandById(Long id) {
+        entityManager.remove(findBandById(id));
+    }
+
     public EntityManager getEntityManager() {
         return entityManager;
     }
