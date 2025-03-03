@@ -41,7 +41,7 @@ public class BandController {
     }
 
     @PostMapping(value = "/band")
-    public String createBand(@Valid Band band,
+    public String createOrUpdateBand(@Valid Band band,
                              BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             return "bandForm";
@@ -50,6 +50,14 @@ public class BandController {
         return "redirect:/band/" + band.getId();
     }
 
-
-
+    @GetMapping("band/edit/{id}")
+    public String editBand(@PathVariable Long id, Model model){
+        Band band = bandAlbumService.findBandById(id);
+        if (band == null) {
+            model.addAttribute("customMessage", "Impossible. Id non valide");
+            return "error";
+        }
+        model.addAttribute("band", band);
+        return "bandForm";
+    }
 }

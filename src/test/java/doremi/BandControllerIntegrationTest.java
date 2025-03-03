@@ -12,8 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -126,6 +125,35 @@ public class BandControllerIntegrationTest {
                 .andExpect(content().string(either(containsString("must not be empty"))
                         .or(containsString("must not be blank"))
                         .or(containsString("ne doit pas être vide"))))
+                .andDo(print());
+    }
+
+    @Test
+    public void testEditBandIdValide() throws Exception{
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type GET vers "/band/edit/{id}" avec un id valide
+        // then: la requête est acceptée (status OK)
+        // then: la vue "bandForm" comporte les infos de lu groupe dont l'id est id
+        Long savId = band.getId();
+        mockMvc.perform(get("/band/edit/" + savId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(view().name("bandForm"))
+                .andExpect(content().string(Matchers.containsString(band.getName())))
+                .andExpect(model().attribute("band", hasProperty("id", is(savId))))
+                .andDo(print());
+    }
+
+    @Test
+    public void testEditBandIdInvalide() throws Exception{
+        // given: un objet MockMvc qui simule des échanges MVC
+        // when: on simule une requête HTTP de type GET vers "/band/edit/{id}" avec un id invalide
+        // then: la requête est acceptée (status OK)
+        // then: la vue "error" est rendue
+        mockMvc.perform(get("/band/edit/" + Integer.MAX_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(view().name("error"))
                 .andDo(print());
     }
 
