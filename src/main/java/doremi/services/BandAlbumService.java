@@ -47,6 +47,8 @@ public class BandAlbumService {
         return bandAlbumRepository.findAllBand();
     }
 
+    public List<Album> findAlbumsByYear(int year) { return bandAlbumRepository.findAlbumsByYear(year); }
+
     public void deleteBandById(Long id) {
         bandAlbumRepository.deleteBandById(id);
     }
