@@ -1,8 +1,10 @@
 package doremi;
 
 import doremi.domain.Album;
+import doremi.domain.Article;
 import doremi.domain.Band;
 import doremi.domain.Genre;
+import doremi.services.ArticleService;
 import doremi.services.BandAlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,24 +15,49 @@ import jakarta.annotation.PostConstruct;
 public class DataLoader {
 
     private BandAlbumService bandAlbumService;
+    private ArticleService articleService;
 
     private Band theStrokes, joyDivision, lanaDelRey, pixies, publicEnemy;
     private Album album1, album2, album3, album4, album5, album6,
             album7, album8, album9, album10, album11, album12;
+    private Article a1, a2, a3, a4, a5, a6, a7, a8, a9;
 
     @Autowired
-    public DataLoader(BandAlbumService bandAlbumService) {
+    public DataLoader(BandAlbumService bandAlbumService, ArticleService articleService) {
         this.bandAlbumService = bandAlbumService;
+        this.articleService = articleService;
     }
 
     @PostConstruct
     public void init() {
         try {
+            initArticles();
             initBands();
             initAndsaves();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void initArticles() {
+        a1 = new Article("Retour sur le concert de Big Thief à la Cigale", "Concert");
+        a2 = new Article("Tournée de Mitski au printemps", "Nouvelle");
+        a3 = new Article("Nouvel album de Black Country, New Road", "Sortie");
+        a4 = new Article("Les 10 meilleures chansons de Burt Bacharach", "Selection");
+        a5 = new Article("Benjamin Biolay était au Bikini hier", "Concert");
+        a6 = new Article("Les 10 meilleures morceaux de Philip Glass", "Selection");
+        a7 = new Article("Séparation du groupe The Long Blondes", "Nouvelle");
+        a8 = new Article("On a écouté le nouvel album de The Weeknd", "Evaluation");
+        a9 = new Article("Neon Golden est sorti il y a 20 ans", "Anniversaire");
+        a1 = articleService.saveArticle(a1);
+        a2 = articleService.saveArticle(a2);
+        a3 = articleService.saveArticle(a3);
+        a4 = articleService.saveArticle(a4);
+        a5 = articleService.saveArticle(a5);
+        a6 = articleService.saveArticle(a6);
+        a7 = articleService.saveArticle(a7);
+        a8 = articleService.saveArticle(a8);
+        a9 = articleService.saveArticle(a9);
     }
 
     private void initBands() {

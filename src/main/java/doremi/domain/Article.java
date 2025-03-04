@@ -1,32 +1,34 @@
 package doremi.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
+@Entity
 public class Article {
 
-    @PositiveOrZero
-    private int articleId;
+    @Id @GeneratedValue
+    private Long articleId;
 
     @NotNull
     @Size(min = 1, max = 64)
     private String title;
     private String category;
 
-    public Article(int id, String title, String category) {
-        setArticleId(id);
-        setTitle(title);
-        setCategory(category);
-    }
-
     public Article() { }
 
-    public int getArticleId() {
+    public Article(String title, String category) {
+        this.title = title;
+        this.category = category;
+    }
+
+    public Long getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(int articleId) {
+    public void setArticleId(Long articleId) {
         this.articleId = articleId;
     }
 
@@ -44,10 +46,6 @@ public class Article {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public boolean equals(Object obj) {
-        return (obj instanceof Article) && (articleId == ((Article) obj).getArticleId());
     }
 
 }

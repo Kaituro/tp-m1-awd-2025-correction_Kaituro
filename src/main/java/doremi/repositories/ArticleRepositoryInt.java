@@ -1,12 +1,10 @@
 package doremi.repositories;
 
 import doremi.domain.Article;
-import java.util.List;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ArticleRepositoryInt {
-
-    public List<Article> findAllArticles();
-    public Article findArticleById(int id);
-    public Article saveArticle(Article article);
+@Repository
+public interface ArticleRepositoryInt extends CrudRepository<Article, Long> {
 
 }

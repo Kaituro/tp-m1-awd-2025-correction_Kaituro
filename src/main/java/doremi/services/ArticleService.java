@@ -7,26 +7,28 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class ArticleService {
+
     @Autowired
     private ArticleRepositoryInt articleRepository;
 
     public List<Article> findAllArticles() {
-        return articleRepository.findAllArticles();
+        return StreamSupport.stream(articleRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
     }
 
-    public Article findArticleById(int id) {
-        return articleRepository.findArticleById(id);
+    public Article findArticleById(Long id) {
+        return articleRepository.findById(id).orElse(null);
     }
 
     public Article saveArticle(Article article) {
         if (article == null)
             throw new InvalidDataAccessApiUsageException("Article must not be null");
-        if (findArticleById(article.getArticleId()) != null)
-            throw new InvalidDataAccessApiUsageException("L'id ne doit pas déjà être en base");
-        return articleRepository.saveArticle(article);
+        return articleRepository.save(article);
     }
 
     public ArticleRepositoryInt getArticleRepository() {
@@ -35,5 +37,9 @@ public class ArticleService {
 
     public void setArticleRepository(ArticleRepositoryInt articleRepository) {
         this.articleRepository = articleRepository;
+    }
+
+    public long countArticle() {
+        return articleRepository.count();
     }
 }

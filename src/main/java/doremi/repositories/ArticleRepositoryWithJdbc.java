@@ -1,3 +1,4 @@
+/*
 package doremi.repositories;
 
 import doremi.domain.Article;
@@ -79,3 +80,4 @@ public class ArticleRepositoryWithJdbc implements ArticleRepositoryInt {
     }
 
 }
+*/
